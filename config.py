@@ -34,7 +34,7 @@ class Config:
     PERMANENT_SESSION_LIFETIME = 60 * 60 * 6
     RATELIMIT_STORAGE_URI = "memory://"
     RATELIMIT_HEADERS_ENABLED = True
-    CONTACT_WHATSAPP = os.getenv("CONTACT_WHATSAPP", "5511999999999")
+    CONTACT_WHATSAPP = os.getenv("CONTACT_WHATSAPP", "5511918669459")
     SITE_URL = os.getenv("SITE_URL", "http://127.0.0.1:5000")
     SECURITY_CSP = (
         "default-src 'self'; "

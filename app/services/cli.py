@@ -87,7 +87,7 @@ def seed_data():
 
     for key, value in {
         "phone": "(11) 4000-1234",
-        "whatsapp": "5511999999999",
+        "whatsapp": "5511918669459",
         "address": "Rua das Oficinas, 245 - Centro",
         "hours": "Seg a Sex, 9h às 18h | Sábado, 9h às 14h",
         "instagram": "https://instagram.com/cicloferencia",

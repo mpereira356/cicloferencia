@@ -137,6 +137,7 @@ class Product(TimestampMixin, StatusMixin, db.Model):
     brand = db.relationship("Brand", back_populates="products")
     images = db.relationship("ProductImage", back_populates="product", cascade="all, delete-orphan")
     favorites = db.relationship("Favorite", back_populates="product", cascade="all, delete-orphan")
+    sales = db.relationship("Sale", back_populates="product")
 
     @hybrid_property
     def display_price(self):
@@ -173,6 +174,43 @@ class ContactMessage(TimestampMixin, db.Model):
     message = db.Column(db.Text, nullable=False)
     message_type = db.Column(db.String(50), default="contato", nullable=False)
     is_resolved = db.Column(db.Boolean, default=False, nullable=False)
+
+
+class Customer(TimestampMixin, StatusMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(150), nullable=False, index=True)
+    person_type = db.Column(db.String(20), default="pf", nullable=False)
+    document = db.Column(db.String(30), unique=True, index=True)
+    contact_name = db.Column(db.String(120))
+    phone = db.Column(db.String(20))
+    whatsapp = db.Column(db.String(20))
+    email = db.Column(db.String(120), index=True)
+    address = db.Column(db.String(255))
+    city = db.Column(db.String(120))
+    state = db.Column(db.String(80))
+    postal_code = db.Column(db.String(20))
+    notes = db.Column(db.Text)
+    sales = db.relationship("Sale", back_populates="customer")
+
+
+class Sale(TimestampMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    sale_number = db.Column(db.String(30), unique=True, nullable=False, index=True)
+    customer_id = db.Column(db.Integer, db.ForeignKey("customer.id"), nullable=False)
+    product_id = db.Column(db.Integer, db.ForeignKey("product.id"))
+    recorded_by_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    product_name = db.Column(db.String(150), nullable=False)
+    sku = db.Column(db.String(50))
+    quantity = db.Column(db.Integer, default=1, nullable=False)
+    unit_price = db.Column(db.Numeric(10, 2), nullable=False)
+    total_price = db.Column(db.Numeric(10, 2), nullable=False)
+    payment_method = db.Column(db.String(50), default="pix", nullable=False)
+    status = db.Column(db.String(40), default="concluida", nullable=False)
+    notes = db.Column(db.Text)
+    sold_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False, index=True)
+    customer = db.relationship("Customer", back_populates="sales")
+    product = db.relationship("Product", back_populates="sales")
+    recorded_by = db.relationship("User")
 
 
 class Banner(TimestampMixin, StatusMixin, db.Model):

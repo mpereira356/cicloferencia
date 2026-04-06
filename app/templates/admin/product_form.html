@@ -3,7 +3,7 @@
 <section class="admin-header">
   <div>
     <h1>{{ 'Editar produto' if product.id else 'Novo produto' }}</h1>
-    <p>Organize cadastro, precificação e exposição com um layout mais limpo.</p>
+    <p>Organize cadastro, precificação e exposição com SKU manual ou automático.</p>
   </div>
 </section>
 <div class="table-card">
@@ -19,7 +19,8 @@
         </div>
         <div class="admin-field">
           <label for="{{ form.sku.id }}">{{ form.sku.label.text }}</label>
-          {{ form.sku(placeholder="SKU") }}
+          {{ form.sku(placeholder="Deixe em branco para gerar automaticamente") }}
+          <small>Se você ainda não usa SKU, o sistema gera um código ao salvar.</small>
         </div>
         <div class="admin-field">
           <label for="{{ form.stock.id }}">{{ form.stock.label.text }}</label>

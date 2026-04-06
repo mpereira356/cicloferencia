@@ -1,0 +1,56 @@
+{% extends "admin_base.html" %}
+{% block content %}
+<section class="admin-header">
+  <div>
+    <h1>Registrar venda</h1>
+    <p>Vincule cliente, produto, forma de pagamento e horário do registro.</p>
+  </div>
+</section>
+<div class="table-card">
+  <form method="post" class="admin-form">
+    {{ form.hidden_tag() }}
+    <section class="admin-form-section">
+      <h2>Venda</h2>
+      <div class="admin-form-grid">
+        <div class="admin-field">
+          <label for="{{ form.customer_id.id }}">{{ form.customer_id.label.text }}</label>
+          {{ form.customer_id() }}
+        </div>
+        <div class="admin-field">
+          <label for="{{ form.product_id.id }}">{{ form.product_id.label.text }}</label>
+          {{ form.product_id() }}
+        </div>
+        <div class="admin-field admin-field-full">
+          <label for="{{ form.product_name.id }}">{{ form.product_name.label.text }}</label>
+          {{ form.product_name(placeholder="Use quando a venda não tiver produto vinculado") }}
+        </div>
+        <div class="admin-field">
+          <label for="{{ form.quantity.id }}">{{ form.quantity.label.text }}</label>
+          {{ form.quantity(min="1") }}
+        </div>
+        <div class="admin-field">
+          <label for="{{ form.unit_price.id }}">{{ form.unit_price.label.text }}</label>
+          {{ form.unit_price(placeholder="Preço unitário") }}
+        </div>
+        <div class="admin-field">
+          <label for="{{ form.payment_method.id }}">{{ form.payment_method.label.text }}</label>
+          {{ form.payment_method() }}
+        </div>
+        <div class="admin-field">
+          <label for="{{ form.status.id }}">{{ form.status.label.text }}</label>
+          {{ form.status() }}
+        </div>
+        <div class="admin-field">
+          <label for="{{ form.sold_at.id }}">{{ form.sold_at.label.text }}</label>
+          {{ form.sold_at() }}
+        </div>
+        <div class="admin-field admin-field-full">
+          <label for="{{ form.notes.id }}">{{ form.notes.label.text }}</label>
+          {{ form.notes(rows="5", placeholder="Observações da venda") }}
+        </div>
+      </div>
+    </section>
+    <div class="admin-form-actions">{{ form.submit(class_='button') }}</div>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "admin_base.html" %}
+{% block content %}
+<section class="admin-header">
+  <h1>Vendas</h1>
+  <a class="button" href="{{ url_for('admin.sale_form') }}">Registrar venda</a>
+</section>
+<div class="table-card">
+  <table>
+    <thead>
+      <tr><th>Número</th><th>Cliente</th><th>Item</th><th>Quantidade</th><th>Total</th><th>Data</th><th>Status</th></tr>
+    </thead>
+    <tbody>
+      {% for item in items %}
+      <tr>
+        <td>{{ item.sale_number }}</td>
+        <td>{{ item.customer.name }}</td>
+        <td>{{ item.product_name }}{% if item.sku %}<br><small>{{ item.sku }}</small>{% endif %}</td>
+        <td>{{ item.quantity }}</td>
+        <td>R$ {{ '%.2f'|format(item.total_price|float) }}</td>
+        <td>{{ item.sold_at.strftime('%d/%m/%Y %H:%M') }}</td>
+        <td>{{ item.status }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="7">Nenhuma venda registrada.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

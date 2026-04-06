@@ -1,10 +1,42 @@
+from datetime import datetime
+from decimal import Decimal
+
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
 
-from app.admin.forms import BannerForm, BrandForm, CategoryForm, ProductForm, ServiceForm, SiteSettingForm, TestimonialForm, UserForm
+from app.admin.forms import (
+    BannerForm,
+    BrandForm,
+    CategoryForm,
+    CustomerForm,
+    ProductForm,
+    SaleForm,
+    ServiceForm,
+    SiteSettingForm,
+    TestimonialForm,
+    UserForm,
+)
 from app.extensions import db
-from app.models import AuditLog, Banner, Brand, Category, ContactMessage, LoginAttemptLog, Product, ProductImage, Role, Service, SiteSetting, SubCategory, Testimonial, User
+from app.models import (
+    AuditLog,
+    Banner,
+    Brand,
+    Category,
+    ContactMessage,
+    Customer,
+    LoginAttemptLog,
+    Product,
+    ProductImage,
+    Role,
+    Sale,
+    Service,
+    SiteSetting,
+    SubCategory,
+    Testimonial,
+    User,
+)
 from app.utils.security import audit_event, role_required, save_image
+from app.utils.sku import generate_product_sku, generate_sale_number
 
 
 admin_bp = Blueprint("admin", __name__)
@@ -19,8 +51,17 @@ def restrict_admin():
 
 def _product_form_choices(form):
     form.category_id.choices = [(item.id, item.name) for item in Category.query.order_by(Category.name).all()]
-    form.subcategory_id.choices = [(0, "Sem subcategoria")] + [(item.id, f"{item.category.name} / {item.name}") for item in SubCategory.query.order_by(SubCategory.name).all()]
+    form.subcategory_id.choices = [(0, "Sem subcategoria")] + [
+        (item.id, f"{item.category.name} / {item.name}") for item in SubCategory.query.order_by(SubCategory.name).all()
+    ]
     form.brand_id.choices = [(item.id, item.name) for item in Brand.query.order_by(Brand.name).all()]
+
+
+def _sale_form_choices(form):
+    form.customer_id.choices = [(item.id, item.name) for item in Customer.query.filter_by(is_active=True).order_by(Customer.name).all()]
+    form.product_id.choices = [(0, "Venda sem produto vinculado")] + [
+        (item.id, f"{item.name} ({item.sku})") for item in Product.query.filter_by(is_active=True).order_by(Product.name).all()
+    ]
 
 
 def _setting_value(key, default=""):
@@ -51,6 +92,8 @@ def dashboard():
         "products": Product.query.count(),
         "categories": Category.query.count(),
         "messages": ContactMessage.query.count(),
+        "customers": Customer.query.count(),
+        "sales": Sale.query.count(),
         "out_of_stock": Product.query.filter(Product.stock <= 0).count(),
         "login_failures": LoginAttemptLog.query.filter_by(successful=False).order_by(LoginAttemptLog.created_at.desc()).limit(10).all(),
         "recent_audits": AuditLog.query.order_by(AuditLog.created_at.desc()).limit(10).all(),
@@ -86,7 +129,7 @@ def product_form(product_id=None):
 
     if form.validate_on_submit():
         product.name = form.name.data.strip()
-        product.sku = form.sku.data.strip().upper()
+        product.sku = (form.sku.data or "").strip().upper()
         product.short_description = form.short_description.data.strip()
         product.description = form.description.data.strip()
         product.technical_specs = form.technical_specs.data.strip()
@@ -106,12 +149,27 @@ def product_form(product_id=None):
 
         db.session.add(product)
         db.session.flush()
+        if not product.sku:
+            product.sku = generate_product_sku(product)
+
         for upload in form.images.data:
             if upload and upload.filename:
                 filename = save_image(upload)
-                db.session.add(ProductImage(product_id=product.id, file_name=filename, alt_text=product.name, is_primary=(len(product.images) == 0)))
+                db.session.add(
+                    ProductImage(
+                        product_id=product.id,
+                        file_name=filename,
+                        alt_text=product.name,
+                        is_primary=(len(product.images) == 0),
+                    )
+                )
 
-        audit_event("product_updated" if product_id else "product_created", "product", product.id, f"Produto {product.name} salvo por {current_user.email}")
+        audit_event(
+            "product_updated" if product_id else "product_created",
+            "product",
+            product.id,
+            f"Produto {product.name} salvo por {current_user.email}",
+        )
         db.session.commit()
         flash("Produto salvo com sucesso.", "success")
         return redirect(url_for("admin.products"))
@@ -138,6 +196,98 @@ def delete_product(product_id):
     db.session.commit()
     flash("Produto excluído.", "warning")
     return redirect(url_for("admin.products"))
+
+
+@admin_bp.route("/clientes")
+def customers():
+    return render_template("admin/customers.html", items=Customer.query.order_by(Customer.created_at.desc()).all())
+
+
+@admin_bp.route("/clientes/novo", methods=["GET", "POST"])
+@admin_bp.route("/clientes/<int:customer_id>/editar", methods=["GET", "POST"])
+def customer_form(customer_id=None):
+    customer = Customer.query.get(customer_id) if customer_id else Customer()
+    form = CustomerForm(obj=customer)
+    if form.validate_on_submit():
+        customer.name = form.name.data.strip()
+        customer.person_type = form.person_type.data
+        customer.document = form.document.data.strip()
+        customer.contact_name = form.contact_name.data.strip()
+        customer.phone = form.phone.data.strip()
+        customer.whatsapp = form.whatsapp.data.strip()
+        customer.email = form.email.data.strip().lower()
+        customer.address = form.address.data.strip()
+        customer.city = form.city.data.strip()
+        customer.state = form.state.data.strip()
+        customer.postal_code = form.postal_code.data.strip()
+        customer.notes = form.notes.data.strip()
+        customer.is_active = form.is_active.data
+        db.session.add(customer)
+        audit_event(
+            "customer_updated" if customer_id else "customer_created",
+            "customer",
+            customer.id,
+            f"Cliente {customer.name} salvo por {current_user.email}",
+        )
+        db.session.commit()
+        flash("Cliente salvo com sucesso.", "success")
+        return redirect(url_for("admin.customers"))
+    return render_template("admin/customer_form.html", form=form, customer=customer)
+
+
+@admin_bp.route("/vendas")
+def sales():
+    items = Sale.query.order_by(Sale.sold_at.desc()).all()
+    return render_template("admin/sales.html", items=items)
+
+
+@admin_bp.route("/vendas/nova", methods=["GET", "POST"])
+def sale_form():
+    if Customer.query.filter_by(is_active=True).count() == 0:
+        flash("Cadastre ao menos um cliente antes de registrar vendas.", "warning")
+        return redirect(url_for("admin.customer_form"))
+    form = SaleForm()
+    _sale_form_choices(form)
+    if request.method == "GET":
+        form.sold_at.data = datetime.utcnow()
+
+    if form.validate_on_submit():
+        product = Product.query.get(form.product_id.data) if form.product_id.data else None
+        product_name = form.product_name.data.strip() if form.product_name.data else ""
+        if product and not product_name:
+            product_name = product.name
+        if not product_name:
+            flash("Informe um item vendido ou selecione um produto.", "danger")
+            return render_template("admin/sale_form.html", form=form)
+
+        quantity = int(form.quantity.data)
+        unit_price = Decimal(form.unit_price.data)
+        sale = Sale(
+            sale_number="PENDENTE",
+            customer_id=form.customer_id.data,
+            product_id=product.id if product else None,
+            recorded_by_id=current_user.id,
+            product_name=product_name,
+            sku=product.sku if product else None,
+            quantity=quantity,
+            unit_price=unit_price,
+            total_price=unit_price * quantity,
+            payment_method=form.payment_method.data,
+            status=form.status.data,
+            sold_at=form.sold_at.data,
+            notes=form.notes.data.strip(),
+        )
+        db.session.add(sale)
+        db.session.flush()
+        sale.sale_number = generate_sale_number(sale)
+        if product and product.stock >= quantity:
+            product.stock -= quantity
+        audit_event("sale_created", "sale", sale.id, f"Venda {sale.sale_number} registrada")
+        db.session.commit()
+        flash("Venda registrada com sucesso.", "success")
+        return redirect(url_for("admin.sales"))
+
+    return render_template("admin/sale_form.html", form=form)
 
 
 @admin_bp.route("/categorias", methods=["GET", "POST"])
@@ -168,7 +318,15 @@ def brands():
 def banners():
     form = BannerForm()
     if form.validate_on_submit():
-        db.session.add(Banner(title=form.title.data.strip(), subtitle=form.subtitle.data.strip(), cta_text=form.cta_text.data.strip(), cta_url=form.cta_url.data.strip(), is_active=form.is_active.data))
+        db.session.add(
+            Banner(
+                title=form.title.data.strip(),
+                subtitle=form.subtitle.data.strip(),
+                cta_text=form.cta_text.data.strip(),
+                cta_url=form.cta_url.data.strip(),
+                is_active=form.is_active.data,
+            )
+        )
         audit_event("banner_created", "banner", details=form.title.data.strip())
         db.session.commit()
         flash("Banner criado.", "success")
@@ -180,7 +338,16 @@ def banners():
 def services():
     form = ServiceForm()
     if form.validate_on_submit():
-        db.session.add(Service(name=form.name.data.strip(), short_description=form.short_description.data.strip(), description=form.description.data.strip(), base_price=form.base_price.data, icon=form.icon.data.strip(), is_active=form.is_active.data))
+        db.session.add(
+            Service(
+                name=form.name.data.strip(),
+                short_description=form.short_description.data.strip(),
+                description=form.description.data.strip(),
+                base_price=form.base_price.data,
+                icon=form.icon.data.strip(),
+                is_active=form.is_active.data,
+            )
+        )
         audit_event("service_created", "service", details=form.name.data.strip())
         db.session.commit()
         flash("Serviço cadastrado.", "success")
@@ -192,7 +359,14 @@ def services():
 def testimonials():
     form = TestimonialForm()
     if form.validate_on_submit():
-        db.session.add(Testimonial(author_name=form.author_name.data.strip(), author_role=form.author_role.data.strip(), content=form.content.data.strip(), is_active=form.is_active.data))
+        db.session.add(
+            Testimonial(
+                author_name=form.author_name.data.strip(),
+                author_role=form.author_role.data.strip(),
+                content=form.content.data.strip(),
+                is_active=form.is_active.data,
+            )
+        )
         audit_event("testimonial_created", "testimonial", details=form.author_name.data.strip())
         db.session.commit()
         flash("Depoimento salvo.", "success")
@@ -261,7 +435,13 @@ def logs():
 
 @admin_bp.route("/configuracoes", methods=["GET", "POST"])
 def settings():
-    form = SiteSettingForm(phone=_setting_value("phone"), whatsapp=_setting_value("whatsapp"), address=_setting_value("address"), hours=_setting_value("hours"), instagram=_setting_value("instagram"))
+    form = SiteSettingForm(
+        phone=_setting_value("phone"),
+        whatsapp=_setting_value("whatsapp"),
+        address=_setting_value("address"),
+        hours=_setting_value("hours"),
+        instagram=_setting_value("instagram"),
+    )
     if form.validate_on_submit():
         for key in ["phone", "whatsapp", "address", "hours", "instagram"]:
             setting = SiteSetting.query.filter_by(key=key).first()

@@ -1,6 +1,16 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import MultipleFileField
-from wtforms import BooleanField, DecimalField, PasswordField, SelectField, StringField, SubmitField, TextAreaField
+from wtforms import (
+    BooleanField,
+    DateTimeLocalField,
+    DecimalField,
+    IntegerField,
+    PasswordField,
+    SelectField,
+    StringField,
+    SubmitField,
+    TextAreaField,
+)
 from wtforms.validators import DataRequired, Email, Length, Optional
 
 
@@ -47,7 +57,7 @@ class TestimonialForm(FlaskForm):
 
 class ProductForm(FlaskForm):
     name = StringField("Nome", validators=[DataRequired(), Length(max=150)])
-    sku = StringField("SKU", validators=[DataRequired(), Length(max=50)])
+    sku = StringField("SKU", validators=[Optional(), Length(max=50)])
     short_description = StringField("Resumo", validators=[Optional(), Length(max=255)])
     description = TextAreaField("Descrição")
     technical_specs = TextAreaField("Especificações")
@@ -85,3 +95,45 @@ class SiteSettingForm(FlaskForm):
     hours = StringField("Horário", validators=[Optional(), Length(max=255)])
     instagram = StringField("Instagram", validators=[Optional(), Length(max=255)])
     submit = SubmitField("Salvar configurações")
+
+
+class CustomerForm(FlaskForm):
+    name = StringField("Nome do cliente", validators=[DataRequired(), Length(max=150)])
+    person_type = SelectField(
+        "Tipo",
+        choices=[("pf", "Pessoa física"), ("pj", "Pessoa jurídica")],
+        validators=[DataRequired()],
+    )
+    document = StringField("CPF/CNPJ", validators=[Optional(), Length(max=30)])
+    contact_name = StringField("Contato responsável", validators=[Optional(), Length(max=120)])
+    phone = StringField("Telefone", validators=[Optional(), Length(max=20)])
+    whatsapp = StringField("WhatsApp", validators=[Optional(), Length(max=20)])
+    email = StringField("E-mail", validators=[Optional(), Email(), Length(max=120)])
+    address = StringField("Endereço", validators=[Optional(), Length(max=255)])
+    city = StringField("Cidade", validators=[Optional(), Length(max=120)])
+    state = StringField("Estado", validators=[Optional(), Length(max=80)])
+    postal_code = StringField("CEP", validators=[Optional(), Length(max=20)])
+    notes = TextAreaField("Observações", validators=[Optional(), Length(max=2000)])
+    is_active = BooleanField("Ativo", default=True)
+    submit = SubmitField("Salvar cliente")
+
+
+class SaleForm(FlaskForm):
+    customer_id = SelectField("Cliente", coerce=int, validators=[DataRequired()])
+    product_id = SelectField("Produto", coerce=int, validators=[Optional()])
+    product_name = StringField("Item vendido", validators=[Optional(), Length(max=150)])
+    quantity = IntegerField("Quantidade", validators=[DataRequired()])
+    unit_price = DecimalField("Preço unitário", validators=[DataRequired()], places=2)
+    payment_method = SelectField(
+        "Pagamento",
+        choices=[("pix", "PIX"), ("cartao", "Cartão"), ("dinheiro", "Dinheiro"), ("boleto", "Boleto")],
+        validators=[DataRequired()],
+    )
+    status = SelectField(
+        "Status",
+        choices=[("concluida", "Concluída"), ("pendente", "Pendente"), ("cancelada", "Cancelada")],
+        validators=[DataRequired()],
+    )
+    sold_at = DateTimeLocalField("Data da venda", format="%Y-%m-%dT%H:%M", validators=[DataRequired()])
+    notes = TextAreaField("Observações", validators=[Optional(), Length(max=2000)])
+    submit = SubmitField("Registrar venda")

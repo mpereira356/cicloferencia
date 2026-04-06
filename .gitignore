@@ -2,6 +2,13 @@
 __pycache__/
 *.pyc
 instance/*.db
+instance/*.sqlite
+instance/*.sqlite3
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+*.sqlite-journal
 .pytest_cache/
 venv/
 .venv/

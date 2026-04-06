@@ -88,7 +88,7 @@ def seed_data():
     for key, value in {
         "phone": "(11) 91452-8745",
         "whatsapp": "5511914528745",
-        "address": "Rua das Oficinas, 245 - Centro",
+        "address": "Rua Dourada, 34 - Jaraguá",
         "hours": "Seg a Sex, 9h às 18h | Sábado, 9h às 14h",
         "instagram": "https://instagram.com/cicloferencia",
     }.items():

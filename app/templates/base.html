@@ -20,15 +20,17 @@
 <body>
   <div class="site-shell">
     <header class="topbar">
-      <a class="brand" href="{{ url_for('main.home') }}">
-        <img src="{{ url_for('static', filename='img/logo_ciclo.png') }}" alt="Cicloferência Bikes">
-        <span>
-          <strong>Cicloferência Bikes</strong>
-          <small>Bike shop + oficina premium</small>
-        </span>
-      </a>
-      <button class="menu-toggle" type="button" data-menu-toggle>Menu</button>
-      <nav class="navbar" data-menu>
+      <div class="topbar-main">
+        <a class="brand" href="{{ url_for('main.home') }}">
+          <img src="{{ url_for('static', filename='img/logo_ciclo.png') }}" alt="Cicloferência Bikes">
+          <span>
+            <strong>Cicloferência Bikes</strong>
+            <small>Bike shop e oficina</small>
+          </span>
+        </a>
+        <button class="menu-toggle" type="button" data-menu-toggle aria-expanded="false" aria-controls="site-menu">Menu</button>
+      </div>
+      <nav class="navbar" id="site-menu" data-menu>
         <a href="{{ url_for('main.home') }}">Home</a>
         <a href="{{ url_for('main.catalog') }}">Catálogo</a>
         <a href="{{ url_for('main.bikes') }}">Bicicletas</a>
@@ -39,7 +41,10 @@
         {% if current_user.is_authenticated %}
           <a href="{{ url_for('auth.account') }}">Minha conta</a>
           {% if current_user.is_admin %}<a href="{{ url_for('admin.dashboard') }}">Admin</a>{% endif %}
-          <form action="{{ url_for('auth.logout') }}" method="post" class="inline-form"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button type="submit" class="link-button">Sair</button></form>
+          <form action="{{ url_for('auth.logout') }}" method="post" class="inline-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="link-button">Sair</button>
+          </form>
         {% else %}
           <a href="{{ url_for('auth.login') }}" class="button button-ghost">Entrar</a>
         {% endif %}

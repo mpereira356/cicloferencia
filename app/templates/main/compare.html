@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Comparar produtos | {{ site_name }}{% endblock %}
+{% block content %}
+<section class="page-header"><h1>Comparação simples</h1><p>Use até três produtos para comparar preço, estoque e marca.</p></section>
+<div class="table-card">
+  <table>
+    <thead><tr><th>Critério</th>{% for product in products %}<th>{{ product.name }}</th>{% endfor %}</tr></thead>
+    <tbody>
+      <tr><td>Preço</td>{% for product in products %}<td>R$ {{ '%.2f'|format(product.display_price|float) }}</td>{% endfor %}</tr>
+      <tr><td>Marca</td>{% for product in products %}<td>{{ product.brand.name }}</td>{% endfor %}</tr>
+      <tr><td>Estoque</td>{% for product in products %}<td>{{ product.stock }}</td>{% endfor %}</tr>
+      <tr><td>Categoria</td>{% for product in products %}<td>{{ product.category.name }}</td>{% endfor %}</tr>
+    </tbody>
+  </table>
+</div>
+{% endblock %}

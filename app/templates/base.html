@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{{ site_name }}{% endblock %}</title>
+  <meta name="description" content="{% block meta_description %}Bicicletaria premium com bikes, peças, acessórios e oficina especializada.{% endblock %}">
+  <meta property="og:title" content="{% block og_title %}{{ self.title() }}{% endblock %}">
+  <meta property="og:description" content="{% block og_description %}{{ self.meta_description() }}{% endblock %}">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="{{ request.url }}">
+  <meta property="og:image" content="{{ url_for('static', filename='img/logo_ciclo.png', _external=True) }}">
+  <link rel="icon" href="{{ url_for('static', filename='img/logo_ciclo.png') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+  {% block head %}{% endblock %}
+</head>
+<body>
+  <div class="site-shell">
+    <header class="topbar">
+      <a class="brand" href="{{ url_for('main.home') }}">
+        <img src="{{ url_for('static', filename='img/logo_ciclo.png') }}" alt="Cicloferência Bikes">
+        <span>
+          <strong>Cicloferência Bikes</strong>
+          <small>Bike shop + oficina premium</small>
+        </span>
+      </a>
+      <button class="menu-toggle" type="button" data-menu-toggle>Menu</button>
+      <nav class="navbar" data-menu>
+        <a href="{{ url_for('main.home') }}">Home</a>
+        <a href="{{ url_for('main.catalog') }}">Catálogo</a>
+        <a href="{{ url_for('main.bikes') }}">Bicicletas</a>
+        <a href="{{ url_for('main.parts') }}">Peças & Acessórios</a>
+        <a href="{{ url_for('main.services_page') }}">Oficina</a>
+        <a href="{{ url_for('main.about') }}">Sobre</a>
+        <a href="{{ url_for('main.contact') }}">Contato</a>
+        {% if current_user.is_authenticated %}
+          <a href="{{ url_for('auth.account') }}">Minha conta</a>
+          {% if current_user.is_admin %}<a href="{{ url_for('admin.dashboard') }}">Admin</a>{% endif %}
+          <form action="{{ url_for('auth.logout') }}" method="post" class="inline-form"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button type="submit" class="link-button">Sair</button></form>
+        {% else %}
+          <a href="{{ url_for('auth.login') }}" class="button button-ghost">Entrar</a>
+        {% endif %}
+      </nav>
+    </header>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-stack">
+          {% for category, message in messages %}
+            <div class="flash {{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <main>
+      {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+      <div>
+        <h4>Cicloferência Bikes</h4>
+        <p>Estrutura profissional para venda, oficina e relacionamento de longo prazo com ciclistas.</p>
+      </div>
+      <div>
+        <h5>Contato</h5>
+        <p>{{ settings.get('phone', '(11) 4000-1234') }}</p>
+        <p>{{ settings.get('address', 'Rua das Oficinas, 245 - Centro') }}</p>
+        <p>{{ settings.get('hours', 'Seg a Sex, 9h às 18h') }}</p>
+      </div>
+      <div>
+        <h5>Navegação</h5>
+        <a href="{{ url_for('main.catalog') }}">Produtos</a>
+        <a href="{{ url_for('main.services_page') }}">Oficina</a>
+        <a href="{{ url_for('main.blog') }}">Novidades</a>
+        <a href="{{ url_for('main.contact') }}">Atendimento</a>
+      </div>
+    </footer>
+  </div>
+
+  <a class="whatsapp-float" href="https://wa.me/{{ whatsapp_number }}" target="_blank" rel="noopener">WhatsApp</a>
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

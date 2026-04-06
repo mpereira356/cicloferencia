@@ -1,0 +1,7 @@
+{% extends "admin_base.html" %}
+{% block content %}
+<section class="layout-two-cols admin-two-cols">
+  <div class="table-card"><h1>Depoimentos</h1>{% for item in items %}<p>{{ item.author_name }} • {{ item.content }}</p>{% endfor %}</div>
+  <div class="table-card"><h2>Novo depoimento</h2><form method="post">{{ form.hidden_tag() }}{{ form.author_name(placeholder="Autor") }}{{ form.author_role(placeholder="Perfil") }}{{ form.content(rows="5", placeholder="Depoimento") }}<label class="checkbox">{{ form.is_active }} Ativo</label>{{ form.submit(class_='button') }}</form></div>
+</section>
+{% endblock %}

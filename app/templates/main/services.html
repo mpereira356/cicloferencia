@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Oficina | {{ site_name }}{% endblock %}
+{% block content %}
+<section class="page-header"><h1>Serviços de oficina</h1><p>Revisão, manutenção, regulagem, montagem e orçamento ágil.</p></section>
+<section class="layout-two-cols">
+  <div class="section-grid">
+    {% for service in services %}
+    <article class="feature-panel">
+      <h3>{{ service.name }}</h3>
+      <p>{{ service.description }}</p>
+      <strong>Base a partir de R$ {{ '%.2f'|format(service.base_price|float if service.base_price else 0) }}</strong>
+    </article>
+    {% endfor %}
+  </div>
+  <div class="filter-card">
+    <h3>Solicitar orçamento</h3>
+    <form method="post">
+      {{ form.hidden_tag() }}
+      {{ form.name(placeholder="Nome") }}
+      {{ form.email(placeholder="E-mail") }}
+      {{ form.phone(placeholder="Telefone") }}
+      {{ form.subject(placeholder="Assunto") }}
+      {{ form.message(rows="5", placeholder="Detalhe a revisão ou manutenção desejada") }}
+      {{ form.message_type }}
+      {{ form.submit(class_='button') }}
+    </form>
+  </div>
+</section>
+{% endblock %}

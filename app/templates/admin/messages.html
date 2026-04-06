@@ -1,0 +1,14 @@
+{% extends "admin_base.html" %}
+{% block content %}
+<section class="admin-header"><h1>Mensagens recebidas</h1></section>
+<div class="table-card">
+  {% for item in items %}
+  <article class="message-card">
+    <strong>{{ item.subject }}</strong>
+    <p>{{ item.name }} • {{ item.email }} • {{ item.phone }}</p>
+    <p>{{ item.message }}</p>
+    <small>{{ item.message_type }} • {{ item.created_at.strftime('%d/%m/%Y %H:%M') }}</small>
+  </article>
+  {% endfor %}
+</div>
+{% endblock %}

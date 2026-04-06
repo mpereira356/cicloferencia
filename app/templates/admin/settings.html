@@ -1,0 +1,42 @@
+{% extends "admin_base.html" %}
+{% block content %}
+<section class="admin-header">
+  <div>
+    <h1>Configurações do site</h1>
+    <p>Centralize os dados públicos da Cicloferência Bikes em um painel mais organizado.</p>
+  </div>
+</section>
+<div class="table-card">
+  <form method="post" class="admin-form">
+    {{ form.hidden_tag() }}
+    <section class="admin-form-section">
+      <h2>Contato e operação</h2>
+      <div class="admin-form-grid">
+        <div class="admin-field">
+          <label for="{{ form.phone.id }}">{{ form.phone.label.text }}</label>
+          {{ form.phone(placeholder="Telefone") }}
+        </div>
+        <div class="admin-field">
+          <label for="{{ form.whatsapp.id }}">{{ form.whatsapp.label.text }}</label>
+          {{ form.whatsapp(placeholder="WhatsApp") }}
+        </div>
+        <div class="admin-field admin-field-full">
+          <label for="{{ form.address.id }}">{{ form.address.label.text }}</label>
+          {{ form.address(placeholder="Endereço") }}
+        </div>
+        <div class="admin-field">
+          <label for="{{ form.hours.id }}">{{ form.hours.label.text }}</label>
+          {{ form.hours(placeholder="Horário de funcionamento") }}
+        </div>
+        <div class="admin-field">
+          <label for="{{ form.instagram.id }}">{{ form.instagram.label.text }}</label>
+          {{ form.instagram(placeholder="URL do Instagram") }}
+        </div>
+      </div>
+    </section>
+    <div class="admin-form-actions">
+      {{ form.submit(class_='button') }}
+    </div>
+  </form>
+</div>
+{% endblock %}

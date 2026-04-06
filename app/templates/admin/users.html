@@ -1,0 +1,21 @@
+{% extends "admin_base.html" %}
+{% block content %}
+<section class="admin-header"><h1>Usuários</h1></section>
+<div class="table-card">
+  <table>
+    <thead><tr><th>Nome</th><th>E-mail</th><th>Perfil</th><th>Status</th><th>Último login</th><th>Ações</th></tr></thead>
+    <tbody>
+      {% for item in items %}
+      <tr>
+        <td>{{ item.name }}</td>
+        <td>{{ item.email }}</td>
+        <td>{{ item.role.name }}</td>
+        <td>{{ 'Ativo' if item.is_active else 'Inativo' }}</td>
+        <td>{{ item.last_login_at.strftime('%d/%m/%Y %H:%M') if item.last_login_at else 'Nunca' }}</td>
+        <td><a href="{{ url_for('admin.edit_user', user_id=item.id) }}">Editar</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

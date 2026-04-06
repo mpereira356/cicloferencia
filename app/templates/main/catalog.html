@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Catálogo | {{ site_name }}{% endblock %}
+{% block content %}
+<section class="page-header"><h1>Catálogo de produtos</h1><p>Busca rápida, filtros objetivos e apresentação premium.</p></section>
+<section class="layout-two-cols">
+  <aside class="filter-card">
+    <form method="get">
+      <input type="search" name="q" placeholder="Buscar por nome" value="{{ request.args.get('q', '') }}">
+      <select name="category"><option value="">Categoria</option>{% for item in filters.categories %}<option value="{{ item.slug }}" {% if request.args.get('category') == item.slug %}selected{% endif %}>{{ item.name }}</option>{% endfor %}</select>
+      <select name="subcategory"><option value="">Subcategoria</option>{% for item in filters.subcategories %}<option value="{{ item.slug }}" {% if request.args.get('subcategory') == item.slug %}selected{% endif %}>{{ item.name }}</option>{% endfor %}</select>
+      <select name="brand"><option value="">Marca</option>{% for item in filters.brands %}<option value="{{ item.slug }}" {% if request.args.get('brand') == item.slug %}selected{% endif %}>{{ item.name }}</option>{% endfor %}</select>
+      <select name="availability"><option value="">Disponibilidade</option><option value="in_stock">Em estoque</option></select>
+      <select name="condition"><option value="">Condição</option><option value="new">Novo</option><option value="used">Usado</option></select>
+      <input type="number" step="0.01" name="min_price" placeholder="Preço mínimo" value="{{ request.args.get('min_price', '') }}">
+      <input type="number" step="0.01" name="max_price" placeholder="Preço máximo" value="{{ request.args.get('max_price', '') }}">
+      <select name="sort">
+        <option value="featured">Destaque</option>
+        <option value="price_asc">Menor preço</option>
+        <option value="price_desc">Maior preço</option>
+        <option value="name_asc">Nome</option>
+        <option value="recent">Mais recentes</option>
+      </select>
+      <button class="button" type="submit">Aplicar filtros</button>
+    </form>
+  </aside>
+  <div>
+    <div class="product-grid">
+      {% for product in products.items %}
+        {% include "components/product_card.html" %}
+      {% else %}
+        <div class="empty-state compact"><p>Nenhum produto encontrado com esse filtro.</p></div>
+      {% endfor %}
+    </div>
+    <div class="pagination">
+      {% if products.has_prev %}<a href="?page={{ products.prev_num }}">Anterior</a>{% endif %}
+      <span>Página {{ products.page }} de {{ products.pages or 1 }}</span>
+      {% if products.has_next %}<a href="?page={{ products.next_num }}">Próxima</a>{% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}

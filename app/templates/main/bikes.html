@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Bicicletas | {{ site_name }}{% endblock %}
+{% block content %}
+<section class="page-header"><h1>Bicicletas novas e usadas</h1><p>Modelos separados visualmente para decisão rápida.</p></section>
+<section class="content-section">
+  <h2>Novas</h2>
+  <div class="product-grid">
+    {% for product in products.items if not product.is_used %}
+      {% include "components/product_card.html" %}
+    {% endfor %}
+  </div>
+</section>
+<section class="content-section">
+  <h2>Usadas</h2>
+  <div class="product-grid">
+    {% for product in products.items if product.is_used %}
+      {% include "components/product_card.html" %}
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

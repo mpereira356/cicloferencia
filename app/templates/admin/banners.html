@@ -1,0 +1,7 @@
+{% extends "admin_base.html" %}
+{% block content %}
+<section class="layout-two-cols admin-two-cols">
+  <div class="table-card"><h1>Banners</h1>{% for item in items %}<p>{{ item.title }} • {{ item.cta_text }}</p>{% endfor %}</div>
+  <div class="table-card"><h2>Novo banner</h2><form method="post">{{ form.hidden_tag() }}{{ form.title(placeholder="Título") }}{{ form.subtitle(placeholder="Subtítulo") }}{{ form.cta_text(placeholder="Texto CTA") }}{{ form.cta_url(placeholder="URL CTA") }}<label class="checkbox">{{ form.is_active }} Ativo</label>{{ form.submit(class_='button') }}</form></div>
+</section>
+{% endblock %}

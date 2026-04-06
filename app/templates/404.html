@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Página não encontrada | {{ site_name }}{% endblock %}
+{% block content %}
+<section class="empty-state">
+  <h1>404</h1>
+  <p>A rota que você tentou acessar não existe ou foi movida.</p>
+  <a class="button" href="{{ url_for('main.home') }}">Voltar para a home</a>
+</section>
+{% endblock %}

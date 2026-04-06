@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Peças e Acessórios | {{ site_name }}{% endblock %}
+{% block content %}
+<section class="page-header"><h1>Peças e acessórios</h1><p>Categorias organizadas com navegação intuitiva.</p></section>
+<div class="product-grid">
+  {% for product in products.items %}
+    {% include "components/product_card.html" %}
+  {% endfor %}
+</div>
+{% endblock %}

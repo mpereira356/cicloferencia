@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Novidades | {{ site_name }}{% endblock %}
+{% block content %}
+<section class="page-header"><h1>Novidades e destaques</h1><p>Área editorial simples para SEO e descoberta de produtos.</p></section>
+<div class="section-grid">
+  {% for product in highlights %}
+  <article class="feature-panel">
+    <p class="eyebrow">Mais visto</p>
+    <h3>{{ product.name }}</h3>
+    <p>{{ product.short_description }}</p>
+    <a href="{{ url_for('main.product_detail', slug=product.slug) }}">Ler mais</a>
+  </article>
+  {% endfor %}
+</div>
+{% endblock %}

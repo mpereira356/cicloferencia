@@ -1,0 +1,48 @@
+{% extends "admin_base.html" %}
+{% block content %}
+<section class="admin-header">
+  <div>
+    <h1>Editar usuário</h1>
+    <p>Ajuste perfil, acesso e senha em um formulário mais claro.</p>
+  </div>
+</section>
+<div class="table-card">
+  <form method="post" class="admin-form">
+    {{ form.hidden_tag() }}
+    <section class="admin-form-section">
+      <h2>Dados da conta</h2>
+      <div class="admin-form-grid">
+        <div class="admin-field">
+          <label for="{{ form.name.id }}">{{ form.name.label.text }}</label>
+          {{ form.name(placeholder="Nome") }}
+        </div>
+        <div class="admin-field">
+          <label for="{{ form.email.id }}">{{ form.email.label.text }}</label>
+          {{ form.email(placeholder="E-mail") }}
+        </div>
+        <div class="admin-field">
+          <label for="{{ form.phone.id }}">{{ form.phone.label.text }}</label>
+          {{ form.phone(placeholder="Telefone") }}
+        </div>
+        <div class="admin-field">
+          <label for="{{ form.role_id.id }}">{{ form.role_id.label.text }}</label>
+          {{ form.role_id() }}
+        </div>
+        <div class="admin-field admin-field-full">
+          <label for="{{ form.password.id }}">{{ form.password.label.text }}</label>
+          {{ form.password(placeholder="Nova senha opcional") }}
+        </div>
+      </div>
+    </section>
+    <section class="admin-form-section">
+      <h2>Status</h2>
+      <div class="admin-checkbox-grid">
+        <label class="admin-checkbox">{{ form.is_active }} Conta ativa</label>
+      </div>
+    </section>
+    <div class="admin-form-actions">
+      {{ form.submit(class_='button') }}
+    </div>
+  </form>
+</div>
+{% endblock %}

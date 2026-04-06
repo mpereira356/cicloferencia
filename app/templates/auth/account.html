@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Minha conta | {{ site_name }}{% endblock %}
+{% block content %}
+<section class="layout-two-cols">
+  <div class="filter-card">
+    <h2>Editar perfil</h2>
+    <form method="post">
+      {{ profile_form.hidden_tag() }}
+      {{ profile_form.name(placeholder="Nome") }}
+      {{ profile_form.email(placeholder="E-mail") }}
+      {{ profile_form.phone(placeholder="Telefone") }}
+      {{ profile_form.submit(class_='button') }}
+    </form>
+  </div>
+  <div class="filter-card">
+    <h2>Alterar senha</h2>
+    <form method="post">
+      {{ password_form.hidden_tag() }}
+      {{ password_form.current_password(placeholder="Senha atual") }}
+      {{ password_form.new_password(placeholder="Nova senha") }}
+      {{ password_form.confirm_password(placeholder="Confirme a nova senha") }}
+      {{ password_form.submit(class_='button') }}
+    </form>
+  </div>
+</section>
+<section class="content-section">
+  <h2>Favoritos</h2>
+  <div class="product-grid">
+    {% for favorite in favorites %}
+      {% set product = favorite.product %}
+      {% include "components/product_card.html" %}
+    {% else %}
+      <div class="empty-state compact"><p>Nenhum produto favoritado ainda.</p></div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

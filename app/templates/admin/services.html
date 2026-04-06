@@ -1,0 +1,7 @@
+{% extends "admin_base.html" %}
+{% block content %}
+<section class="layout-two-cols admin-two-cols">
+  <div class="table-card"><h1>Serviços</h1>{% for item in items %}<p>{{ item.name }} • R$ {{ '%.2f'|format(item.base_price|float if item.base_price else 0) }}</p>{% endfor %}</div>
+  <div class="table-card"><h2>Novo serviço</h2><form method="post">{{ form.hidden_tag() }}{{ form.name(placeholder="Nome") }}{{ form.short_description(placeholder="Resumo") }}{{ form.description(rows="4", placeholder="Descrição") }}{{ form.base_price(placeholder="Preço base") }}{{ form.icon(placeholder="Ícone") }}<label class="checkbox">{{ form.is_active }} Ativo</label>{{ form.submit(class_='button') }}</form></div>
+</section>
+{% endblock %}

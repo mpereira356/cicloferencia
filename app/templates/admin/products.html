@@ -1,0 +1,27 @@
+{% extends "admin_base.html" %}
+{% block content %}
+<section class="admin-header"><h1>Produtos</h1><a class="button" href="{{ url_for('admin.product_form') }}">Novo produto</a></section>
+<div class="table-card">
+  <table>
+    <thead><tr><th>Nome</th><th>SKU</th><th>Preço</th><th>Estoque</th><th>Status</th><th>Ações</th></tr></thead>
+    <tbody>
+      {% for item in items %}
+      <tr>
+        <td>{{ item.name }}</td>
+        <td>{{ item.sku }}</td>
+        <td>R$ {{ '%.2f'|format(item.display_price|float) }}</td>
+        <td>{{ item.stock }}</td>
+        <td>{{ 'Ativo' if item.is_active else 'Inativo' }}</td>
+        <td class="actions">
+          <a href="{{ url_for('admin.product_form', product_id=item.id) }}">Editar</a>
+          <form method="post" action="{{ url_for('admin.toggle_product', product_id=item.id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button type="submit">Toggle</button></form>
+          {% if current_user.has_role('admin') %}
+          <form method="post" action="{{ url_for('admin.delete_product', product_id=item.id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button type="submit">Excluir</button></form>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

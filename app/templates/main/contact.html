@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Contato | {{ site_name }}{% endblock %}
+{% block content %}
+<section class="layout-two-cols">
+  <div class="content-section">
+    <h1>Fale com a Cicloferência Bikes</h1>
+    <p>Atendimento para compra, oficina, orçamento e pós-venda.</p>
+    <ul class="spec-list">
+      <li>Telefone: {{ settings.get('phone', '(11) 4000-1234') }}</li>
+      <li>WhatsApp: {{ settings.get('whatsapp', whatsapp_number) }}</li>
+      <li>Endereço: {{ settings.get('address', 'Rua das Oficinas, 245 - Centro') }}</li>
+      <li>Horário: {{ settings.get('hours', 'Seg a Sex, 9h às 18h') }}</li>
+    </ul>
+    <iframe title="Mapa" src="https://www.google.com/maps?q=S%C3%A3o%20Paulo&output=embed" loading="lazy"></iframe>
+  </div>
+  <div class="filter-card">
+    <h3>Mensagem rápida</h3>
+    <form method="post">
+      {{ form.hidden_tag() }}
+      {{ form.name(placeholder="Nome") }}
+      {{ form.email(placeholder="E-mail") }}
+      {{ form.phone(placeholder="Telefone") }}
+      {{ form.subject(placeholder="Assunto") }}
+      {{ form.message(rows="5", placeholder="Como podemos ajudar?") }}
+      {{ form.submit(class_='button') }}
+    </form>
+  </div>
+</section>
+{% endblock %}

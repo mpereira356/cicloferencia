@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Erro interno | {{ site_name }}{% endblock %}
+{% block content %}
+<section class="empty-state">
+  <h1>Algo saiu do trilho</h1>
+  <p>O sistema registrou o erro e vamos normalizar o atendimento.</p>
+  <a class="button" href="{{ url_for('main.home') }}">Ir para a home</a>
+</section>
+{% endblock %}

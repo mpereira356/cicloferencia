@@ -1,0 +1,17 @@
+{% extends "admin_base.html" %}
+{% block content %}
+<section class="layout-two-cols admin-two-cols">
+  <div class="table-card">
+    <h1>Logs administrativos</h1>
+    {% for item in audit_logs %}
+      <p>{{ item.created_at.strftime('%d/%m %H:%M') }} • {{ item.action }} • {{ item.details }}</p>
+    {% endfor %}
+  </div>
+  <div class="table-card">
+    <h2>Tentativas de login</h2>
+    {% for item in login_logs %}
+      <p>{{ item.created_at.strftime('%d/%m %H:%M') }} • {{ item.email }} • {{ 'sucesso' if item.successful else 'falha' }} • {{ item.ip_address }}</p>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

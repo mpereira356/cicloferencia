@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Admin | {{ site_name }}{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+</head>
+<body class="admin-body">
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <a class="brand brand-admin" href="{{ url_for('admin.dashboard') }}">
+        <img src="{{ url_for('static', filename='img/logo_ciclo.png') }}" alt="">
+        <span>Admin</span>
+      </a>
+      <nav>
+        <a href="{{ url_for('admin.dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('admin.products') }}">Produtos</a>
+        <a href="{{ url_for('admin.categories') }}">Categorias</a>
+        <a href="{{ url_for('admin.brands') }}">Marcas</a>
+        <a href="{{ url_for('admin.banners') }}">Banners</a>
+        <a href="{{ url_for('admin.services') }}">Serviços</a>
+        <a href="{{ url_for('admin.testimonials') }}">Depoimentos</a>
+        <a href="{{ url_for('admin.messages') }}">Mensagens</a>
+        {% if current_user.has_role('admin') %}<a href="{{ url_for('admin.users') }}">Usuários</a>{% endif %}
+        <a href="{{ url_for('admin.logs') }}">Logs</a>
+        <a href="{{ url_for('admin.settings') }}">Configurações</a>
+        <a href="{{ url_for('main.home') }}">Voltar ao site</a>
+      </nav>
+    </aside>
+    <main class="admin-main">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div class="flash-stack">
+            {% for category, message in messages %}
+              <div class="flash {{ category }}">{{ message }}</div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

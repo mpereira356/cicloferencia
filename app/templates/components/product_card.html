@@ -1,0 +1,25 @@
+<article class="product-card">
+  <div class="product-media">
+    <img src="{{ url_for('static', filename='uploads/' ~ (product.images[0].file_name if product.images else 'img/logo_ciclo.png')) if product.images and product.images[0].file_name != 'logo_ciclo.png' else url_for('static', filename='img/logo_ciclo.png') }}" alt="{{ product.name }}">
+    {% if product.is_used %}<span class="badge">Usada</span>{% endif %}
+    {% if product.is_featured %}<span class="badge badge-dark">Destaque</span>{% endif %}
+  </div>
+  <div class="product-body">
+    <p class="eyebrow">{{ product.brand.name }}{% if product.category %} • {{ product.category.name }}{% endif %}</p>
+    <h3>{{ product.name }}</h3>
+    <p>{{ product.short_description }}</p>
+    <div class="product-meta">
+      <strong>R$ {{ '%.2f'|format(product.display_price|float) }}</strong>
+      <span>{{ 'Em estoque' if product.in_stock else 'Sob consulta' }}</span>
+    </div>
+    <div class="card-actions">
+      <a class="button" href="{{ url_for('main.product_detail', slug=product.slug) }}">Ver produto</a>
+      {% if current_user.is_authenticated %}
+      <form method="post" action="{{ url_for('main.toggle_favorite', product_id=product.id) }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button class="button button-ghost" type="submit">Favoritar</button>
+      </form>
+      {% endif %}
+    </div>
+  </div>
+</article>

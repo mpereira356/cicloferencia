@@ -1,0 +1,7 @@
+{% extends "admin_base.html" %}
+{% block content %}
+<section class="layout-two-cols admin-two-cols">
+  <div class="table-card"><h1>Categorias</h1>{% for item in items %}<p>{{ item.name }} • {{ 'Ativa' if item.is_active else 'Inativa' }}</p>{% endfor %}</div>
+  <div class="table-card"><h2>Nova categoria</h2><form method="post">{{ form.hidden_tag() }}{{ form.name(placeholder="Nome") }}{{ form.description(rows="4", placeholder="Descrição") }}<label class="checkbox">{{ form.is_active }} Ativa</label>{{ form.submit(class_='button') }}</form></div>
+</section>
+{% endblock %}

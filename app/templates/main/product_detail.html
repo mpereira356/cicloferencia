@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}{{ product.name }} | {{ site_name }}{% endblock %}
+{% block content %}
+<section class="product-detail">
+  <div class="product-gallery">
+    {% for image in product.images %}
+      <img src="{{ url_for('static', filename='img/logo_ciclo.png') if image.file_name == 'logo_ciclo.png' else url_for('static', filename='uploads/' ~ image.file_name) }}" alt="{{ image.alt_text or product.name }}">
+    {% endfor %}
+  </div>
+  <div class="product-summary">
+    <p class="eyebrow">{{ product.brand.name }} • {{ product.category.name }}</p>
+    <h1>{{ product.name }}</h1>
+    <p>{{ product.description }}</p>
+    <div class="price-block">
+      <strong>R$ {{ '%.2f'|format(product.display_price|float) }}</strong>
+      {% if product.promotional_price %}<small>de R$ {{ '%.2f'|format(product.price|float) }}</small>{% endif %}
+    </div>
+    <ul class="spec-list">
+      <li>SKU: {{ product.sku }}</li>
+      <li>Estoque: {{ product.stock }}</li>
+      <li>Condição: {{ 'Usado' if product.is_used else 'Novo' }}</li>
+      <li>Marca: {{ product.brand.name }}</li>
+    </ul>
+    <div class="hero-actions">
+      <a class="button" href="https://wa.me/{{ whatsapp_number }}?text=Tenho%20interesse%20em%20{{ product.name|urlencode }}" target="_blank">Consultar no WhatsApp</a>
+      {% if current_user.is_authenticated %}
+      <form method="post" action="{{ url_for('main.toggle_favorite', product_id=product.id) }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="button button-ghost">Favoritar</button>
+      </form>
+      {% endif %}
+    </div>
+    <div class="technical-box">
+      <h3>Especificações técnicas</h3>
+      <p>{{ product.technical_specs }}</p>
+    </div>
+  </div>
+</section>
+
+<section class="content-section">
+  <div class="section-heading"><h2>Produtos relacionados</h2></div>
+  <div class="product-grid">
+    {% for product in related_products %}
+      {% include "components/product_card.html" %}
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

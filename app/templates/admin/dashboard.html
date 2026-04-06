@@ -1,0 +1,49 @@
+{% extends "admin_base.html" %}
+{% block content %}
+<section class="admin-header">
+  <h1>Dashboard</h1>
+  <p>Visão consolidada da operação da Cicloferência Bikes.</p>
+</section>
+<section class="stats-grid">
+  <article class="stat-card"><span>Usuários</span><strong>{{ stats.users }}</strong></article>
+  <article class="stat-card"><span>Produtos</span><strong>{{ stats.products }}</strong></article>
+  <article class="stat-card"><span>Categorias</span><strong>{{ stats.categories }}</strong></article>
+  <article class="stat-card"><span>Mensagens</span><strong>{{ stats.messages }}</strong></article>
+  <article class="stat-card"><span>Sem estoque</span><strong>{{ stats.out_of_stock }}</strong></article>
+</section>
+<section class="layout-two-cols admin-two-cols">
+  <div class="table-card">
+    <h2>Métricas por mix</h2>
+    <div class="simple-chart">
+      {% for label in chart["labels"] %}
+      <div class="chart-row">
+        <span>{{ label }}</span>
+        <div><i style="width: {{ (chart['values'][loop.index0] * 20) + 20 }}px"></i><strong>{{ chart['values'][loop.index0] }}</strong></div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="table-card">
+    <h2>Estoque baixo</h2>
+    {% for item in stats.low_stock %}
+      <p>{{ item.name }} <strong>{{ item.stock }}</strong></p>
+    {% else %}
+      <p>Nenhum item com estoque baixo.</p>
+    {% endfor %}
+  </div>
+</section>
+<section class="layout-two-cols admin-two-cols">
+  <div class="table-card">
+    <h2>Falhas recentes de login</h2>
+    {% for item in stats.login_failures %}
+      <p>{{ item.email }} • {{ item.ip_address }} • {{ item.created_at.strftime('%d/%m %H:%M') }}</p>
+    {% else %}<p>Sem falhas recentes.</p>{% endfor %}
+  </div>
+  <div class="table-card">
+    <h2>Auditoria recente</h2>
+    {% for item in stats.recent_audits %}
+      <p>{{ item.action }} • {{ item.entity_type }} • {{ item.created_at.strftime('%d/%m %H:%M') }}</p>
+    {% else %}<p>Sem eventos recentes.</p>{% endfor %}
+  </div>
+</section>
+{% endblock %}

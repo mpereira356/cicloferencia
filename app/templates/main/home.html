@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero">
+  <div class="hero-copy">
+    <p class="eyebrow">Loja + oficina com padrão profissional</p>
+    <h1>Cicloferência Bikes para quem exige técnica, estética e confiança.</h1>
+    <p>Venda consultiva de bicicletas, peças e acessórios com oficina estruturada para manutenção, upgrades e expansão da sua rotina sobre duas rodas.</p>
+    <div class="hero-actions">
+      <a class="button" href="{{ url_for('main.catalog') }}">Explorar catálogo</a>
+      <a class="button button-ghost" href="https://wa.me/{{ whatsapp_number }}" target="_blank">Falar no WhatsApp</a>
+    </div>
+  </div>
+  <div class="hero-panel">
+    {% for banner in banners %}
+    <article class="banner-card">
+      <h3>{{ banner.title }}</h3>
+      <p>{{ banner.subtitle }}</p>
+      <a href="{{ banner.cta_url or url_for('main.catalog') }}">{{ banner.cta_text or 'Saiba mais' }}</a>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="section-grid">
+  <article class="feature-panel"><h3>Bicicletas</h3><p>Modelos novos e usados com curadoria técnica, revisão e apresentação premium.</p></article>
+  <article class="feature-panel"><h3>Peças</h3><p>Componentes de reposição e upgrade com marcas reconhecidas e estoque controlado.</p></article>
+  <article class="feature-panel"><h3>Acessórios</h3><p>Itens essenciais de segurança, mobilidade urbana e performance.</p></article>
+</section>
+
+<section class="content-section">
+  <div class="section-heading">
+    <p class="eyebrow">Produtos em destaque</p>
+    <h2>Seleção com apelo comercial e técnico</h2>
+  </div>
+  <div class="product-grid">
+    {% for product in featured_products %}
+      {% include "components/product_card.html" %}
+    {% endfor %}
+  </div>
+</section>
+
+<section class="content-section split-section">
+  <div>
+    <p class="eyebrow">Serviços da oficina</p>
+    <h2>Operação pronta para manutenção recorrente e expansão de marca</h2>
+    <ul class="check-list">
+      {% for service in services %}
+      <li><strong>{{ service.name }}</strong> <span>{{ service.short_description }}</span></li>
+      {% endfor %}
+    </ul>
+  </div>
+  <div class="dark-panel">
+    <h3>Bikes usadas em evidência</h3>
+    <div class="mini-grid">
+      {% for product in used_bikes %}
+      <a href="{{ url_for('main.product_detail', slug=product.slug) }}">{{ product.name }}</a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="content-section">
+  <div class="section-heading">
+    <p class="eyebrow">Benefícios</p>
+    <h2>Confiança, velocidade de atendimento e estrutura limpa</h2>
+  </div>
+  <div class="section-grid">
+    <article class="feature-panel"><h3>Estoque organizado</h3><p>Catálogo com filtros, status de disponibilidade e destaque para promoções.</p></article>
+    <article class="feature-panel"><h3>Atendimento híbrido</h3><p>Formulário, WhatsApp e painel administrativo para acompanhar contatos.</p></article>
+    <article class="feature-panel"><h3>Expansão preparada</h3><p>Base técnica pronta para PostgreSQL, RBAC, auditoria e crescimento operacional.</p></article>
+  </div>
+</section>
+
+<section class="content-section testimonials">
+  <div class="section-heading">
+    <p class="eyebrow">Depoimentos</p>
+    <h2>Percepção de serviço profissional</h2>
+  </div>
+  <div class="section-grid">
+    {% for item in testimonials %}
+    <article class="feature-panel">
+      <p>"{{ item.content }}"</p>
+      <strong>{{ item.author_name }}</strong>
+      <small>{{ item.author_role }}</small>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="newsletter-section">
+  <div>
+    <p class="eyebrow">Novidades e ofertas</p>
+    <h2>Receba lançamentos, promoções e avisos da oficina</h2>
+  </div>
+  <form action="{{ url_for('main.newsletter') }}" method="post" class="newsletter-form">
+    {{ newsletter_form.hidden_tag() }}
+    {{ newsletter_form.email(placeholder="Seu melhor e-mail") }}
+    {{ newsletter_form.submit(class_="button") }}
+  </form>
+</section>
+{% endblock %}

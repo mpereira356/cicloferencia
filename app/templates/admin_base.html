@@ -21,7 +21,7 @@
         <a href="{{ url_for('admin.banners') }}">Banners</a>
         <a href="{{ url_for('admin.services') }}">Serviços</a>
         <a href="{{ url_for('admin.testimonials') }}">Depoimentos</a>
-        <a href="{{ url_for('admin.messages') }}">Mensagens</a>
+        <a href="{{ url_for('admin.messages') }}" class="admin-nav-link">Mensagens{% if admin_unseen_messages_count %}<span class="admin-badge">{{ admin_unseen_messages_count }}</span>{% endif %}</a>
         {% if current_user.has_role('admin') %}<a href="{{ url_for('admin.users') }}">Usuários</a>{% endif %}
         <a href="{{ url_for('admin.logs') }}">Logs</a>
         <a href="{{ url_for('admin.settings') }}">Configurações</a>

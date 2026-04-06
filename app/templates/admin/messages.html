@@ -1,14 +1,27 @@
 {% extends "admin_base.html" %}
 {% block content %}
-<section class="admin-header"><h1>Mensagens recebidas</h1></section>
+<section class="admin-header">
+  <div>
+    <h1>Mensagens recebidas</h1>
+    <p>Gerencie contatos do site e exclua mensagens já tratadas.</p>
+  </div>
+</section>
 <div class="table-card">
   {% for item in items %}
   <article class="message-card">
-    <strong>{{ item.subject }}</strong>
+    <div class="message-card-head">
+      <strong>{{ item.subject }}</strong>
+      <form method="post" action="{{ url_for('admin.delete_message', message_id=item.id) }}" onsubmit="return confirm('Excluir esta mensagem?');">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="button button-danger">Excluir</button>
+      </form>
+    </div>
     <p>{{ item.name }} • {{ item.email }} • {{ item.phone }}</p>
     <p>{{ item.message }}</p>
     <small>{{ item.message_type }} • {{ item.created_at.strftime('%d/%m/%Y %H:%M') }}</small>
   </article>
+  {% else %}
+  <div class="empty-state compact"><p>Nenhuma mensagem cadastrada.</p></div>
   {% endfor %}
 </div>
 {% endblock %}

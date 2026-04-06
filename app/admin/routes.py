@@ -28,6 +28,22 @@ def _setting_value(key, default=""):
     return setting.value if setting else default
 
 
+def _admin_unseen_messages_count():
+    last_seen_raw = _setting_value("admin_last_seen_message_id", "0")
+    try:
+        last_seen_id = int(last_seen_raw or 0)
+    except ValueError:
+        last_seen_id = 0
+    return ContactMessage.query.filter(ContactMessage.id > last_seen_id).count()
+
+
+@admin_bp.app_context_processor
+def inject_admin_context():
+    return {
+        "admin_unseen_messages_count": _admin_unseen_messages_count(),
+    }
+
+
 @admin_bp.route("/")
 def dashboard():
     stats = {
@@ -186,7 +202,25 @@ def testimonials():
 
 @admin_bp.route("/mensagens")
 def messages():
-    return render_template("admin/messages.html", items=ContactMessage.query.order_by(ContactMessage.created_at.desc()).all())
+    items = ContactMessage.query.order_by(ContactMessage.created_at.desc()).all()
+    latest_message = ContactMessage.query.order_by(ContactMessage.id.desc()).first()
+    setting = SiteSetting.query.filter_by(key="admin_last_seen_message_id").first()
+    if not setting:
+        setting = SiteSetting(key="admin_last_seen_message_id", value="0")
+        db.session.add(setting)
+    setting.value = str(latest_message.id if latest_message else 0)
+    db.session.commit()
+    return render_template("admin/messages.html", items=items)
+
+
+@admin_bp.route("/mensagens/<int:message_id>/excluir", methods=["POST"])
+def delete_message(message_id):
+    message = ContactMessage.query.get_or_404(message_id)
+    audit_event("message_deleted", "contact_message", message.id, f"Mensagem removida: {message.subject}")
+    db.session.delete(message)
+    db.session.commit()
+    flash("Mensagem excluída com sucesso.", "warning")
+    return redirect(url_for("admin.messages"))
 
 
 @admin_bp.route("/usuarios")
